@@ -8,13 +8,13 @@ exports.handleUserInput = handleUserInput = (query) => {
 	}
 	console.error(
 		`The jukebox didn't recognize your request, please input a valid request
-		- add "title" "artist": adds an album to the collection with the given title and artist. All albums are unplayed by default.
-		- play "title": marks a given album as played.
-		- show all: displays all of the albums in the collection
-		- show unplayed: display all of the albums that are unplayed
-		- show all by "artist": shows all of the albums in the collection by the given artist
-		- show unplayed by "artist": shows the unplayed albums in the collection by the given artist
-		- quit: quits the program
+	- add "title" "artist": adds an album to the collection with the given title and artist. All albums are unplayed by default.
+	- play "title": marks a given album as played.
+	- show all: displays all of the albums in the collection
+	- show unplayed: display all of the albums that are unplayed
+	- show all by "artist": shows all of the albums in the collection by the given artist
+	- show unplayed by "artist": shows the unplayed albums in the collection by the given artist
+	- quit: quits the program
 		`
 	)
 }
@@ -40,7 +40,7 @@ exports.addAlbum = addAlbum = (state, args = []) => {
 
 exports.playAlbum = playAlbum = (state, args) => {
 	const [title] = args
-	if(albumExists) {
+	if(albumExists(state, title)) {
 		return state.map(album => {
 			if (album.title === title) {
 				album.played = true
@@ -107,7 +107,7 @@ exports.promptQuestion = promptQuestion = (rl, state) => {
 			let [action, ...args] = ans.split('"').filter(x => x && x !== ' ')
 			action = action.trim()
 			if(['add', 'play'].includes(action)) {
-				newState = dispatchAction(state, ACTIONS[action], args)
+				newState = ACTIONS[action](state, args)
 			}
 			if(newState) {
 				console.log(userOutput(newState, action, args))
@@ -126,8 +126,4 @@ exports.initializeApp = initializeApp = () => {
 	})
 	state = []
 	promptQuestion(rl, state)
-}
-
-exports.dispatchAction = dispatchAction = (prevState = state, action = (state) => state, args) => {
-	return action(prevState, args)
 }
