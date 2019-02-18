@@ -1,6 +1,8 @@
 ## Instructions
 
--- clone the repo
+-- git clone https://github.com/CharlieBliss/jukebox.git
+
+-- cd jukebox
 
 -- npm install
 
