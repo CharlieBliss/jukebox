@@ -1,7 +1,9 @@
 ## Instructions
 
 -- clone the repo
+
 -- npm install
+
 -- ./music
 
 - add "title" "artist": adds an album to the collection with the given title and artist. All albums are unplayed by default.
