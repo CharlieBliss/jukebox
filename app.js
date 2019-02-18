@@ -3,6 +3,9 @@ const isEqual = require('lodash.isEqual')
 
 exports = module.exports
 
+// I decided to take a fairly functional approach here since most of the application is based on input/output.
+// This also has the advantage of making the application very easy to test and (in my opinion) reason about.
+
 exports.handleUserInput = handleUserInput = (query) => {
 	if(query.match(/(add "[^"]+" "[^"]+"$)|(play "[^"]+"$)|(show all$)|(show unplayed$)|(show unplayed by "[^"]+"$)|(show all by "[^"]+"$)/i)) {
 		return true
