@@ -7,7 +7,7 @@ exports = module.exports
 // This also has the advantage of making the application very easy to test and (in my opinion) reason about.
 
 exports.handleUserInput = handleUserInput = (query) => {
-	if(query.match(/(add "[^"]+" "[^"]+"$)|(play "[^"]+"$)|(show all$)|(show unplayed$)|(show unplayed by "[^"]+"$)|(show all by "[^"]+"$)/i)) {
+	if (query.match(/(add "[^"]+" "[^"]+"$)|(play "[^"]+"$)|(show all$)|(show unplayed$)|(show unplayed by "[^"]+"$)|(show all by "[^"]+"$)/i)) {
 		return true
 	}
 	console.error(
@@ -20,16 +20,16 @@ exports.handleUserInput = handleUserInput = (query) => {
 		- show all by "artist": shows all of the albums in the collection by the given artist
 		- show unplayed by "artist": shows the unplayed albums in the collection by the given artist
 		- quit: quits the program
-		`
+		`,
 	)
 }
 exports.albumExists = albumExists = (state, title) => state.some(album => album.title.toLowerCase() === title.toLowerCase())
 
 exports.artistExists = artistExists = (state, artist) => state.some(album => album.artist.toLowerCase() === artist.toLowerCase())
 
-exports.addAlbum = addAlbum = (state, args = [], prompt) => {
+exports.addAlbum = addAlbum = (state, args = []) => {
 	const [title, artist] = args
-	if(albumExists(state, title)) {
+	if (albumExists(state, title)) {
 		console.error('An album by that name is already in the jukebox.')
 		return state
 	}
@@ -39,18 +39,18 @@ exports.addAlbum = addAlbum = (state, args = [], prompt) => {
 			artist: artist.trim(),
 			title: title.trim(),
 			plays: 0,
-		}
+		},
 	]
 }
 
-exports.playAlbum = playAlbum = (state, args, prompt) => {
+exports.playAlbum = playAlbum = (state, args) => {
 	const [title] = args
-	if(albumExists(state, title)) {
-		return state.map(album => {
+	if (albumExists(state, title)) {
+		return state.map((album) => {
 			if (album.title.toLowerCase() === title.toLowerCase()) {
 				return {
 					...album,
-					plays: (album.plays + 1)
+					plays: (album.plays + 1),
 				}
 			}
 			return album
@@ -61,27 +61,27 @@ exports.playAlbum = playAlbum = (state, args, prompt) => {
 }
 
 exports.ACTIONS = ACTIONS = {
-	'add': addAlbum,
-	'play': playAlbum,
+	add: addAlbum,
+	play: playAlbum,
 }
 
-exports.showAll = showAll = (albums) =>
+exports.showAll = showAll = albums =>
 	albums.map(album =>
-		`"${album.title}" by ${album.artist} (${ album.plays ? 'played' : 'unplayed' })`
+		`"${album.title}" by ${album.artist} (${album.plays ? 'played' : 'unplayed'})`,
 	).join('\n')
 
 exports.filterByArtist = filterByArtist = (albums, artist) =>
-	albums.filter((album) =>
-		album.artist.toLowerCase() === artist.toLowerCase()
+	albums.filter(album =>
+		album.artist.toLowerCase() === artist.toLowerCase(),
 	)
 
-exports.filterByUnplayed = filterByUnplayed = (albums) =>
+exports.filterByUnplayed = filterByUnplayed = albums =>
 	albums.filter(({ plays }) =>
-		!plays
+		!plays,
 	)
 
 exports.handleArtistInput = handleArtistInput = (state, args, action) => {
-	if(artistExists(state, args[0])) {
+	if (artistExists(state, args[0])) {
 		return action()
 	}
 	return 'No albums by that artist in the jukebox.'
@@ -101,25 +101,27 @@ exports.userOutput = userOutput = (state, action, args) => {
 			return showAll(filterByUnplayed(state))
 		case 'show unplayed by':
 			return handleArtistInput(state, args, () => showAll(filterByUnplayed(filterByArtist(state, args[0]))))
+		default:
+			return "The jukebox didn't recognize your request, please input a valid request"
 	}
 }
 
 exports.promptQuestion = promptQuestion = (rl, state) => {
-	rl.question('', ans => {
-		if(ans === 'quit') {
+	rl.question('', (ans) => {
+		if (ans === 'quit') {
 			console.log('Goodbye!')
 			return rl.close()
 		}
 		let newState = [...state]
 		let skipOutput = false
-		if(handleUserInput(ans)) {
+		if (handleUserInput(ans)) {
 			let [action, ...args] = ans.split('"').filter(x => x && x !== ' ')
 			action = action.trim()
-			if(['add', 'play'].includes(action)) {
+			if (['add', 'play'].includes(action)) {
 				newState = ACTIONS[action](state, args)
 				skipOutput = isEqual(state, newState)
 			}
-			if(!skipOutput) {
+			if (!skipOutput) {
 				console.log(userOutput(newState, action, args))
 			}
 
@@ -133,7 +135,7 @@ exports.initializeApp = initializeApp = () => {
 		input: process.stdin,
 		output: process.stdout,
 	})
-	state = []
+	const state = []
 	console.log('Welcome to your music collection!')
 	promptQuestion(rl, state)
 }
